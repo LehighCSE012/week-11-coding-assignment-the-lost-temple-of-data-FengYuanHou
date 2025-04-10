@@ -4,8 +4,8 @@ Includes functions to load artifact data from Excel, location notes from TSV,
 and extract dates and secret codes from journal text.
 """
 
-import pandas as pd
 import re
+import pandas as pd
 import datetime
 
 def load_artifact_data(excel_filepath):
@@ -75,34 +75,33 @@ def main():
     Simulates processing the artifact and location data, and extracting information
     from the journal.
     """
-    # Define file paths
-    EXCEL_FILE = 'artifacts.xlsx'
-    TSV_FILE = 'locations.tsv'
-    JOURNAL_FILE = 'journal.txt'
+    excel_file = 'artifacts.xlsx'
+    tsv_file = 'locations.tsv'
+    journal_file = 'journal.txt'
 
-    print(f"--- Loading Artifact Data from {EXCEL_FILE} ---")
+    print(f"--- Loading Artifact Data from {excel_file} ---")
     try:
-        artifacts_df = load_artifact_data(EXCEL_FILE)
+        artifacts_df = load_artifact_data(excel_file)
         print("Successfully loaded DataFrame. First 5 rows:")
         print(artifacts_df.head())
         print("\nDataFrame Info:")
         artifacts_df.info()
     except FileNotFoundError:
-        print(f"Error: File not found at {EXCEL_FILE}")
+        print(f"Error: File not found at {excel_file}")
 
-    print(f"\n--- Loading Location Notes from {TSV_FILE} ---")
+    print(f"\n--- Loading Location Notes from {tsv_file} ---")
     try:
-        locations_df = load_location_notes(TSV_FILE)
+        locations_df = load_location_notes(tsv_file)
         print("Successfully loaded DataFrame. First 5 rows:")
         print(locations_df.head())
         print("\nDataFrame Info:")
         locations_df.info()
     except FileNotFoundError:
-        print(f"Error: File not found at {TSV_FILE}")
+        print(f"Error: File not found at {tsv_file}")
 
-    print(f"\n--- Processing Journal from {JOURNAL_FILE} ---")
+    print(f"\n--- Processing Journal from {journal_file} ---")
     try:
-        with open(JOURNAL_FILE, 'r', encoding='utf-8') as f:
+        with open(journal_file, 'r', encoding='utf-8') as f:
             journal_content = f.read()
 
         print("\nExtracting Dates...")
@@ -114,7 +113,7 @@ def main():
         print(f"Found codes: {codes_list}")
 
     except FileNotFoundError:
-        print(f"Error: File not found at {JOURNAL_FILE}")
+        print(f"Error: File not found at {journal_file}")
 
 if __name__ == '__main__':
     main()
