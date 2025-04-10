@@ -4,9 +4,10 @@ Includes functions to load artifact data from Excel, location notes from TSV,
 and extract dates and secret codes from journal text.
 """
 
-import re
-import pandas as pd
 import datetime
+import re
+
+import pandas as pd
 
 def load_artifact_data(excel_filepath):
     """
