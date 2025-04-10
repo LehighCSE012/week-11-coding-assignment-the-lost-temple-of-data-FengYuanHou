@@ -1,5 +1,12 @@
+"""
+Adventure parser module for processing data files from the Lost Temple of Azmar.
+Includes functions to load artifact data from Excel, location notes from TSV,
+and extract dates and secret codes from journal text.
+"""
+
 import pandas as pd
 import re
+import datetime
 
 def load_artifact_data(excel_filepath):
     """
@@ -30,20 +37,29 @@ def load_location_notes(tsv_filepath):
 
 def extract_journal_dates(journal_text):
     """
-    Extracts all dates in MM/DD/YYYY format from the journal text.
+    Extracts all valid dates in MM/DD/YYYY format from the journal text.
+    Only dates that pass datetime.strptime() validation are returned.
 
     Args:
         journal_text (str): The full text content of the journal.
 
     Returns:
-        list[str]: A list of date strings found in the text.
+        list[str]: A list of valid date strings found in the text.
     """
-    dates = re.findall(r"\d{2}/\d{2}/\d{4}", journal_text)
-    return dates
+    found_dates = re.findall(r"\d{2}/\d{2}/\d{4}", journal_text)
+    valid_dates = []
+    for d in found_dates:
+        try:
+            datetime.datetime.strptime(d, "%m/%d/%Y")
+            valid_dates.append(d)
+        except ValueError:
+            pass
+    return valid_dates
 
 def extract_secret_codes(journal_text):
     """
-    Extracts all secret codes in AZMAR-XXX format (XXX are digits) from the journal text.
+    Extracts all secret codes in AZMAR-XXX format (where XXX are digits)
+    from the journal text.
 
     Args:
         journal_text (str): The full text content of the journal.
@@ -51,48 +67,54 @@ def extract_secret_codes(journal_text):
     Returns:
         list[str]: A list of secret code strings found in the text.
     """
-    codes = re.findall(r"AZMAR-\d{3}", journal_text)
-    return codes
+    found_codes = re.findall(r"AZMAR-\d{3}", journal_text)
+    return found_codes
 
-# --- Optional: Main execution block for testing ---
-if __name__ == '__main__':
-    # Define file paths (根据文件实际存放路径调整)
-    excel_file = 'artifacts.xlsx'
-    tsv_file = 'locations.tsv'
-    journal_file = 'journal.txt'
+def main():
+    """
+    Simulates processing the artifact and location data, and extracting information
+    from the journal.
+    """
+    # Define file paths
+    EXCEL_FILE = 'artifacts.xlsx'
+    TSV_FILE = 'locations.tsv'
+    JOURNAL_FILE = 'journal.txt'
 
-    print(f"--- Loading Artifact Data from {excel_file} ---")
+    print(f"--- Loading Artifact Data from {EXCEL_FILE} ---")
     try:
-        artifacts_df = load_artifact_data(excel_file)
+        artifacts_df = load_artifact_data(EXCEL_FILE)
         print("Successfully loaded DataFrame. First 5 rows:")
         print(artifacts_df.head())
         print("\nDataFrame Info:")
         artifacts_df.info()
     except FileNotFoundError:
-        print(f"Error: File not found at {excel_file}")
+        print(f"Error: File not found at {EXCEL_FILE}")
 
-    print(f"\n--- Loading Location Notes from {tsv_file} ---")
+    print(f"\n--- Loading Location Notes from {TSV_FILE} ---")
     try:
-        locations_df = load_location_notes(tsv_file)
+        locations_df = load_location_notes(TSV_FILE)
         print("Successfully loaded DataFrame. First 5 rows:")
         print(locations_df.head())
         print("\nDataFrame Info:")
         locations_df.info()
     except FileNotFoundError:
-        print(f"Error: File not found at {tsv_file}")
+        print(f"Error: File not found at {TSV_FILE}")
 
-    print(f"\n--- Processing Journal from {journal_file} ---")
+    print(f"\n--- Processing Journal from {JOURNAL_FILE} ---")
     try:
-        with open(journal_file, 'r', encoding='utf-8') as f:
+        with open(JOURNAL_FILE, 'r', encoding='utf-8') as f:
             journal_content = f.read()
 
         print("\nExtracting Dates...")
-        dates = extract_journal_dates(journal_content)
-        print(f"Found dates: {dates}")
+        dates_list = extract_journal_dates(journal_content)
+        print(f"Found dates: {dates_list}")
 
         print("\nExtracting Secret Codes...")
-        codes = extract_secret_codes(journal_content)
-        print(f"Found codes: {codes}")
+        codes_list = extract_secret_codes(journal_content)
+        print(f"Found codes: {codes_list}")
 
     except FileNotFoundError:
-        print(f"Error: File not found at {journal_file}")
+        print(f"Error: File not found at {JOURNAL_FILE}")
+
+if __name__ == '__main__':
+    main()
